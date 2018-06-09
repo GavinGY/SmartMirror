@@ -1,0 +1,62 @@
+C51 COMPILER V9.55   REG_RW                                                                11/28/2017 23:36:37 PAGE 1   
+
+
+C51 COMPILER V9.55, COMPILATION OF MODULE REG_RW
+OBJECT MODULE PLACED IN .\6_Output\Objects\Reg_RW.obj
+COMPILER INVOKED BY: D:\Program Files\Keil_C51\C51\BIN\C51.EXE 3_BoardDrive\Reg_RW.c LARGE OPTIMIZE(8,SPEED) BROWSE INCD
+                    -IR(..\SpeechRecognition;.\1_Application;.\2_System;.\3_BoardDrive;.\4_FirmwareLib;.\5_ChipDrive;.\7_ReadMe) DEBUG OBJECT
+                    -EXTEND PRINT(.\6_Output\Listings\Reg_RW.lst) TABS(2) OBJECT(.\6_Output\Objects\Reg_RW.obj)
+
+line level    source
+
+   1          /***************************飞音云电子****************************
+   2          **  工程名称：YS-V0.7语音识别模块驱动程序
+   3          **  CPU: STC11L08XE
+   4          **  晶振：22.1184MHZ
+   5          **  波特率：9600 bit/S
+   6          **  配套产品信息：YS-V0.7语音识别开发板
+   7          **                http://yuesheng001.taobao.com
+   8          **  作者：zdings
+   9          **  联系：751956552@qq.com
+  10          **  修改日期：2013.9.13
+  11          **  说明：口令模式： 即每次识别时都需要说“小杰”这个口令 ，才能够进行下一级的识别
+  12          /***************************飞音云电子******************************/
+  13          
+  14          #include "Reg_RW.h"
+  15          
+  16              #define LD_INDEX_PORT   (*((volatile unsigned char xdata*)(0x8100))) 
+  17              #define LD_DATA_PORT    (*((volatile unsigned char xdata*)(0x8000))) 
+  18              //评估板上 MCU的A8 连接到 LD芯片的AD
+  19              //         MCU的A14 连接到 LD芯片的CSB
+  20              //         MCU的RD、WR 连接 LD芯片的RD、WR (xdata 读写时自动产生低信号)
+  21              //
+  22              //0x8100的二进制是10000001 00000000   CSB=0 AD=1
+  23              //                 ^     ^
+  24              //0x8000的二进制是10000000 00000000   CSB=0 AD=0
+  25              //                 ^     ^    
+  26              void LD_WriteReg( unsigned char address, unsigned char dataout )
+  27              {
+  28   1            LD_INDEX_PORT  = address;         
+  29   1            LD_DATA_PORT = dataout;          
+  30   1          }
+  31              
+  32              unsigned char LD_ReadReg( unsigned char address )
+  33              {
+  34   1            LD_INDEX_PORT = address;         
+  35   1            return (unsigned char)LD_DATA_PORT;     
+  36   1          }
+  37          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     22    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

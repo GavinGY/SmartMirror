@@ -1,0 +1,7 @@
+".\6_Output\Objects\main.obj",
+".\6_Output\Objects\interrupt.obj",
+".\6_Output\Objects\LDChip.obj",
+".\6_Output\Objects\Reg_RW.obj",
+".\6_Output\Objects\usart.obj" 
+TO ".\6_Output\Objects\SpeechRecognition" 
+PRINT(".\6_Output\Listings\SpeechRecognition.m51") RAMSIZE(256) 

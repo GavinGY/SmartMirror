@@ -1,0 +1,147 @@
+#include "StdBsp.h"               //STD
+#include "LaserPassingMaster.h"   //APP
+
+
+/********************* Timer0中断函数************************/
+void timer0_int (void) interrupt TIMER0_VECTOR
+{
+   
+	  Time20ms++;			
+		if(Time20ms>49) 
+		{
+		   Time20ms=0;
+			 Time1s++;
+		}
+		if(Time1s>65534) Time1s=0;  //最高计数18.2小时
+			
+	
+}
+
+/********************* Timer1中断函数************************/
+void timer1_int (void) interrupt TIMER1_VECTOR
+{
+
+}
+
+/********************* Timer2中断函数************************/
+void timer2_int (void) interrupt TIMER2_VECTOR
+{
+	
+}
+/********************* Timer3中断函数************************/
+void timer3_int (void) interrupt TIMER3_VECTOR
+{
+
+}
+/********************* Timer3中断函数************************/
+void timer4_int (void) interrupt TIMER4_VECTOR
+{
+	
+}
+
+/******************** External Interrupt ***********************/
+/******************** External Interrupt ***********************/
+/******************** External Interrupt ***********************/
+
+/********************* INT0中断函数 *************************/
+void Ext_INT0 (void) interrupt INT0_VECTOR		//P32 //进中断时已经清除标志
+{
+	    EX0=0;
+	    LED_P6x8Str(12, 6,"                  ");
+	    LED_P6x8Str(12, 6,"interrupt Ext_INT0");
+	    LED=~LED;
+	    EX0=1;
+}
+
+/********************* INT1中断函数 *************************/
+void Ext_INT1 (void) interrupt INT1_VECTOR		//P33 //进中断时已经清除标志
+{
+	    EX1=0;//关闭外部中断，避免重复触发，打断函数执行，导致OLED现实错误
+	    LED_P6x8Str(12, 6,"                  ");
+	    LED_P6x8Str(12, 6,"interrupt Ext_INT1");
+		  LED=~LED;
+	    EX1=1;
+}
+
+/********************* INT2中断函数 *************************/
+void Ext_INT2 (void) interrupt INT2_VECTOR	//P36
+{
+	  INT_CLKO &= 0xEF;
+	  LED_P6x8Str(12, 6,"                  ");
+	  LED_P6x8Str(12, 6,"interrupt Ext_INT2");
+	  LED=~LED;
+	  INT_CLKO |= 0x10;
+}
+
+/********************* INT3中断函数 *************************/
+void Ext_INT3 (void) interrupt INT3_VECTOR   //P37
+{
+	  INT_CLKO &= 0xDF;
+	  LED_P6x8Str(12, 6,"                  ");
+	  LED_P6x8Str(12, 6,"interrupt Ext_INT3");
+    LED=~LED;	
+	  INT_CLKO |= 0x20;
+}
+
+/********************* INT4中断函数 *************************/
+void Ext_INT4 (void) interrupt INT4_VECTOR  //P30
+{
+		INT_CLKO &= 0xBF;
+	  LED_P6x8Str(12, 6,"                  ");
+	  LED_P6x8Str(12, 6,"interrupt Ext_INT4");
+	  LED=~LED;
+		INT_CLKO |= 0x40;
+}
+
+/********************* Usart1 Interrupt ************************/
+void UART1_int (void) interrupt UART1_VECTOR
+{
+	if(RI)
+	{
+		RI = 0;
+		if(COM1.B_RX_OK == 0)
+		{
+			if(COM1.RX_Cnt >= COM_RX1_Lenth)	COM1.RX_Cnt = 0;
+			RX1_Buffer[COM1.RX_Cnt++] = SBUF;
+			COM1.RX_TimeOut = TimeOutSet1;
+		}
+	}
+
+	if(TI)
+	{
+		TI = 0;
+		if(COM1.TX_read != COM1.TX_write)
+		{
+		 	SBUF = TX1_Buffer[COM1.TX_read];
+			if(++COM1.TX_read >= COM_TX1_Lenth)		COM1.TX_read = 0;
+		}
+		else	COM1.B_TX_busy = 0;
+	}
+}
+
+/********************* Uart2 Interrupt ************************/
+void UART2_int (void) interrupt UART2_VECTOR
+{
+	if(RI2)
+	{
+		CLR_RI2();
+		if(COM2.B_RX_OK == 0)
+		{
+			if(COM2.RX_Cnt >= COM_RX2_Lenth)	COM2.RX_Cnt = 0;
+			RX2_Buffer[COM2.RX_Cnt++] = S2BUF;
+			COM2.RX_TimeOut = TimeOutSet2;
+		}
+	}
+
+	if(TI2)
+	{
+		CLR_TI2();
+		if(COM2.TX_read != COM2.TX_write)
+		{
+		 	S2BUF = TX2_Buffer[COM2.TX_read];
+			if(++COM2.TX_read >= COM_TX2_Lenth)		COM2.TX_read = 0;
+		}
+		else	COM2.B_TX_busy = 0;
+	}
+
+}
